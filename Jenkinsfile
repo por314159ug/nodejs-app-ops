@@ -25,6 +25,21 @@ pipeline {
             }
         }
         
+        stage('Cleanup Existing Container') {
+            steps {
+                script {
+                    // Stop and remove any existing container using port 3000
+                    powershell '''
+                        $containers = docker ps -q --filter "publish=3000"
+                        if ($containers) {
+                            docker stop $containers
+                            docker rm $containers
+                        }
+                    '''
+                }
+            }
+        }
+        
         stage('Run Docker Container') {
             steps {
                 script {
